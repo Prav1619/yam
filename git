@@ -1,0 +1,7 @@
+instructions
+| Step | Command                       | Purpose                     |
+| ---- | ----------------------------- | --------------------------- |
+| 1    | `git init` (already done)     | Initialize local repo       |
+| 2    | `git remote add origin <url>` | Connect to GitHub           |
+| 3    | `git push origin master:main` | Push local → GitHub main    |
+| 4    | `git checkout main`           | Work directly on main later |
