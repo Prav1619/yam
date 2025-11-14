@@ -1,0 +1,46 @@
+pipeline {
+    agent any 
+    environment{
+        AWS_REGION = "us-east-1"
+        ECR_REPO = "195275633063.dkr.ecr.us-east-1.amazonaws.com/my-app"
+        IMAGE = "my-app"
+        TAG = "latest"
+    }
+    
+    stages {
+        stage('code') {
+            steps {
+               git branch: 'flm', url: 'https://github.com/Prav1619/digital_marketing.git' 
+            }
+        }
+        stage('AWS-ECR-Login') {
+            steps {
+                sh '''
+                aws ecr get-login-password --region $AWS_REGION | \
+                docker login --username AWS --password-stdin $ECR_REPO
+                '''
+            }
+        }
+        stage('Build docker image'){
+            steps{
+                sh '''
+                docker build -t $IMAGE 2128_tween_agency
+                docker tag $IMAGE:latest $ECR_REPO:$TAG 
+                '''
+            }
+        }
+        stage('push to ECR') {
+            steps {
+               sh 'docker push $ECR_REPO:$TAG' 
+            }
+        }
+        stage('Run Container on Jenkins EC2') {
+           steps {
+              sh '''
+                 docker pull $ECR_REPO:$TAG
+                 docker run -d --name my-app-container -p 80:80 $ECR_REPO:$TAG
+                '''
+          }
+       }
+    }
+}
